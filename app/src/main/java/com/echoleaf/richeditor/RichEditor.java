@@ -250,7 +250,7 @@ public class RichEditor extends NestedScrollView implements RichView {
         if (onPieceChangeListener != null) {
             onPieceChangeListener.onRemove(this, richPiece);
             if (finish)
-                onPieceChangeListener.inTransactionChanged(this, richPiece);
+                onPieceChangeListener.inTransactionChanged(this, getPieceCount() > 0 ? (RichPiece) getPieceAt(getPieceCount() - 1).getTag() : null);
         }
         if (onContentChangeListener != null && view instanceof RichView)
             onContentChangeListener.onContentChanged((RichView) view, true);

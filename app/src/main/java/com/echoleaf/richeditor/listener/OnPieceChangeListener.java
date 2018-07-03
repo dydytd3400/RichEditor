@@ -28,8 +28,8 @@ public abstract class OnPieceChangeListener {
      * 所以仅当单次调用全部完成以后才会触发一次该方法
      *
      * @param richEditor
-     * @param piece
+     * @param lastPiece 最后一个受到更改的RichPiece
      */
-    public void inTransactionChanged(RichEditor richEditor, RichPiece piece) {
+    public void inTransactionChanged(RichEditor richEditor, RichPiece lastPiece) {
     }
 }
