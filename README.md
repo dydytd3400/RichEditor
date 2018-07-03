@@ -1,7 +1,15 @@
 # RichEditor
 rich text editor for android
 
+### Use
+##### gradle
+> dependencies {
+>     implementation'com.github.dydytd3400:RichEditor:1.0'
+> }
+
+
 Simple example:
+
 `layout.xml`
 ```
  <com.echoleaf.richeditor.RichEditor
