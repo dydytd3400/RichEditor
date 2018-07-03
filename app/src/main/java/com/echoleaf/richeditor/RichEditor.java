@@ -135,7 +135,9 @@ public class RichEditor extends NestedScrollView implements RichView {
     public void insert(@NonNull RichPiece richPiece) {
         View view = richPiece.getView();
         if (view instanceof EditText) {
-            insert(((EditText) view).getText());
+            if (getPieceCount() > 0 && getPieceAt(getPieceCount() - 1) instanceof EditText)
+                insert(((EditText) view).getText());
+            else append(richPiece);
             return;
         }
         EditText focusEdit = null;
