@@ -97,13 +97,15 @@ public class RichEditor extends NestedScrollView implements RichView {
         }
     }
 
-    /**
-     * 生成文本输入框
-     */
-    private RichPiece<EditText> createEditPiece(CharSequence text) {
+    public RichPiece<EditText> createEditPiece() {
+        return createEditPiece(null);
+    }
+
+    public RichPiece<EditText> createEditPiece(CharSequence text) {
         EditText editText = baseEditTextCreator.create(getContext());
         editText.setOnKeyListener(keyListener);
-        editText.setText(text);
+        if (text != null)
+            editText.setText(text);
         editText.setTextSize(defaultSize);
         editText.setTextColor(defaultColor);
         baseEditTextCreator.someStyle(editText);
