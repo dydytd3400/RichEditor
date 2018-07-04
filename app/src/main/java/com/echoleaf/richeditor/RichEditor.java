@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import com.echoleaf.richeditor.listener.OnContentChangeListener;
 import com.echoleaf.richeditor.listener.OnPieceChangeListener;
 import com.echoleaf.richeditor.listener.OnSelectionChangeListener;
+import com.echoleaf.richeditor.menu.SelectionActionMenuCreator;
 import com.echoleaf.richeditor.piece.RichPiece;
 import com.echoleaf.richeditor.piece.RichPieceAdapter;
 import com.echoleaf.richeditor.richview.RichTextView;
@@ -39,6 +40,7 @@ public class RichEditor extends NestedScrollView implements RichView {
     private View.OnFocusChangeListener onFocusChangeListener;
     private OnContentChangeListener onContentChangeListener;
     private OnPieceChangeListener onPieceChangeListener;
+    private SelectionActionMenuCreator selectionActionMenuCreator;
 
     private BaseEditTextCreator baseEditTextCreator;
     private float defaultSize = 12;
@@ -104,6 +106,9 @@ public class RichEditor extends NestedScrollView implements RichView {
     public RichPiece<EditText> createEditPiece(CharSequence text) {
         EditText editText = baseEditTextCreator.create(getContext());
         editText.setOnKeyListener(keyListener);
+        if (selectionActionMenuCreator != null) {
+            editText.setCustomSelectionActionModeCallback(selectionActionMenuCreator.getSelectionActionMenu(getContext(), editText));
+        }
         if (text != null)
             editText.setText(text);
         editText.setTextSize(defaultSize);
@@ -471,6 +476,7 @@ public class RichEditor extends NestedScrollView implements RichView {
         private OnContentChangeListener onContentChangeListener;
         private BaseEditTextCreator baseEditTextCreator;
         private OnPieceChangeListener pieceChangeListener;
+        private SelectionActionMenuCreator selectionActionMenuCreator;
 
         private Config(RichEditor richEditor) {
             this.mRichEditor = richEditor;
@@ -495,6 +501,11 @@ public class RichEditor extends NestedScrollView implements RichView {
 
         public Config pieceChangeListener(OnPieceChangeListener pieceChangeListener) {
             this.pieceChangeListener = pieceChangeListener;
+            return this;
+        }
+
+        public Config selectionActionMenu(SelectionActionMenuCreator selectionActionMenuCreator) {
+            this.selectionActionMenuCreator = selectionActionMenuCreator;
             return this;
         }
 
@@ -566,6 +577,7 @@ public class RichEditor extends NestedScrollView implements RichView {
             mRichEditor.setOnFocusChangeListener(onFocusChangeListener);
             mRichEditor.setOnContentChangeListener(onContentChangeListener);
             mRichEditor.onPieceChangeListener = pieceChangeListener;
+            mRichEditor.selectionActionMenuCreator = selectionActionMenuCreator;
             mRichEditor.init();
         }
 

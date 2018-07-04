@@ -5,14 +5,10 @@ import android.content.res.Resources;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StrikethroughSpan;
-import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -20,12 +16,10 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 
-
 import com.echoleaf.richeditor.Style;
 import com.echoleaf.richeditor.listener.OnContentChangeListener;
 import com.echoleaf.richeditor.listener.OnSelectionChangeListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,20 +76,20 @@ public class SimpleRichTextView extends AppCompatEditText implements RichTextVie
         prePos = curPos;
     }
 
-    public void setStyle(@StyleVal int style) {
+    public void setStyle(@Style.StyleVal int style) {
         int star = getSelectionStart();
         int end = getSelectionEnd();
         if (star < 0 || end > length())
             return;
         if (star == end) {
             if (star > 0) {
-                List spans = findStyle(star - 1, end, style);
+                List spans = Style.findStyle(getText(), star - 1, end, style);
                 if (spans != null) {
                     removeStyle(spans);
                     return;
                 }
             } else if (end < length()) {
-                List spans = findStyle(star, end + 1, style);
+                List spans = Style.findStyle(getText(), star, end + 1, style);
                 if (spans != null) {
                     removeStyle(spans);
                     return;
@@ -103,7 +97,7 @@ public class SimpleRichTextView extends AppCompatEditText implements RichTextVie
             }
             setStyle(star, end, style);
         } else {
-            List spans = findStyle(star, end, style);
+            List spans = Style.findStyle(getText(), star, end, style);
             if (spans == null || spans.size() == 0)
                 setStyle(star, end, style);
             else
@@ -111,68 +105,12 @@ public class SimpleRichTextView extends AppCompatEditText implements RichTextVie
         }
     }
 
-    public boolean hasStyle(@StyleVal int style) {
-        int star = getSelectionStart();
-        int end = getSelectionEnd();
-        if (star < 0 || end > length())
-            return false;
-        if (star == end) {
-            if (star > 0) {
-                if (hasStyle(star - 1, end, style)) {
-                    return true;
-                }
-            } else if (end < length()) {
-                if (hasStyle(star, end + 1, style)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public boolean hasStyle(@Style.StyleVal int style) {
+        return Style.hasStyle(this, style);
     }
 
-    public boolean hasStyle(int star, int end, @StyleVal int style) {
-        List spans = findStyle(star, end, style);
-        return spans != null && spans.size() > 0;
-    }
-
-
-    private List<Object> findStyle(int star, int end, @StyleVal int style) {
-        if (star < 0 || end > length())
-            return null;
-        Class<?> spanType = null;
-        switch (style) {
-            case Style.BOLD:
-            case Style.ITALIC:
-            case Style.BOLD_ITALIC:
-            case Style.NORMAL:
-                spanType = StyleSpan.class;
-                break;
-            case Style.UNDERLINE:
-                spanType = UnderlineSpan.class;
-                break;
-            case Style.STRIKE:
-                spanType = StrikethroughSpan.class;
-                break;
-        }
-        Object[] spans = getText().getSpans(star, end, spanType);
-        if (spans != null && spans.length > 0) {
-            List<Object> list = new ArrayList<>();
-            for (Object span : spans)
-                if (span != null) {
-                    boolean isStyleSpan = span instanceof StyleSpan && ((StyleSpan) span).getStyle() == style;
-                    boolean isUnderlineSpan = span instanceof UnderlineSpan && Style.UNDERLINE == style;
-                    boolean isStrikethroughSpan = span instanceof StrikethroughSpan && Style.STRIKE == style;
-                    if (isStyleSpan || isUnderlineSpan || isStrikethroughSpan) {
-                        list.add(span);
-                    }
-                }
-            return list;
-        }
-        return null;
-    }
-
-    private void removeStyle(int star, int end, @StyleVal int style) {
-        removeStyle(findStyle(star, end, style));
+    public boolean hasStyle(int star, int end, @Style.StyleVal int style) {
+        return Style.hasStyle(getText(), star, end, style);
     }
 
     private void removeStyle(List spans) {
@@ -214,29 +152,14 @@ public class SimpleRichTextView extends AppCompatEditText implements RichTextVie
     }
 
 
-    private void setStyle(int star, int end, @StyleVal int style) {
-        Object span = null;
-        switch (style) {
-            case Style.BOLD:
-            case Style.ITALIC:
-            case Style.BOLD_ITALIC:
-            case Style.NORMAL:
-                span = new StyleSpan(style);
-                break;
-            case Style.UNDERLINE:
-                span = new UnderlineSpan();
-                break;
-            case Style.STRIKE:
-                span = new StrikethroughSpan();
-                break;
-        }
-        setSpan(star, end, span);
+    private void setStyle(int star, int end, @Style.StyleVal int style) {
+        setSpan(star, end, Style.getSpan(style));
     }
 
     private void setSpan(int star, int end, Object span) {
         if (span == null)
             return;
-        getText().setSpan(span, star, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        Style.setSpan(getText(), star, end, span);
         onContentChanged();
     }
 

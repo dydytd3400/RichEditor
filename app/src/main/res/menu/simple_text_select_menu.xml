@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/all"
+        android:title="全选" />
+    <item
+        android:id="@+id/copy"
+        android:title="复制" />
+    <item
+        android:id="@+id/cut"
+        android:title="剪切" />
+    <item
+        android:id="@+id/paste"
+        android:title="粘帖" />
+    <group android:id="@+id/style_group">
+        <item
+            android:id="@+id/bold"
+            android:title="粗体" />
+        <item
+            android:id="@+id/italic"
+            android:title="斜体" />
+        <item
+            android:id="@+id/underline"
+            android:title="下划线" />
+        <item
+            android:id="@+id/strike"
+            android:title="删除线" />
+        <item
+            android:id="@+id/clear"
+            android:title="格式擦" />
+    </group>
+</menu>
