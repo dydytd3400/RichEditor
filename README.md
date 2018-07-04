@@ -2,7 +2,7 @@
 RichEditor是Android平台下基于Span和NestedScrollView实现的Html富文本编辑器，支持高度自定义View的布局，并且可通过对内部定义的接口和抽象来进行自定义View到html的转换并交由RichEditor进行统一管理。
 
 ### 使用：
-##### gradle
+### gradle
 在gradle中增加如下配置
 ```
 dependencies {
@@ -10,7 +10,7 @@ dependencies {
 }
 ```
 
-##### 布局
+### 布局
 在layout布局文件中加入如下代码
 ```
 <com.echoleaf.richeditor.RichEditor
@@ -23,7 +23,7 @@ dependencies {
     app:layout_constraintTop_toBottomOf="@+id/line" />
 ```
 
-##### 初始化
+### 初始化
 RichEditor初始化配置，均为可选。
 ```
 RichEditor mEditor = findViewById(R.id.editor);
@@ -62,7 +62,7 @@ mEditor.config()
 mEditor.config().build();
 ```
 
-##### 简单应用
+### 简单应用
 较为基础的几个样式设置方法
 ```
 mEditor.bold();//将所选文本设置为粗体，若已经是粗体，则取消粗体效果
@@ -76,7 +76,8 @@ mEditor.isBold();//返回光标所选区域是否为粗体样式
 ...
 mEditor.isStrike();//返回光标所选区域是否有删除线
 }
-##### 高级应用
+```
+### 高级应用
 插入一段文本
 ```
 mEditor.insert("RichEditor Simple Example");
