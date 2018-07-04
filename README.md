@@ -4,7 +4,7 @@ rich text editor for android
 ### Use
 ##### gradle
 > dependencies {
->     implementation'com.github.dydytd3400:RichEditor:1.0'
+>     implementation'com.github.dydytd3400:RichEditor:1.0.1'
 > }
 
 
