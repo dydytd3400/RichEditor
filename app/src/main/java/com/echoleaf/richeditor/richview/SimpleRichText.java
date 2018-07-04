@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * @author echoleaf
  */
-public class SimpleRichTextView extends AppCompatEditText implements RichTextView {
+public class SimpleRichText extends AppCompatEditText implements RichText {
 
     private boolean readOnly;
     private OnSelectionChangeListener onSelectionChangeListener;
@@ -33,17 +33,17 @@ public class SimpleRichTextView extends AppCompatEditText implements RichTextVie
     private int prePos = 0;
     private int curPos = 0;
 
-    public SimpleRichTextView(Context context) {
+    public SimpleRichText(Context context) {
         super(context);
         init();
     }
 
-    public SimpleRichTextView(Context context, AttributeSet attrs) {
+    public SimpleRichText(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public SimpleRichTextView(Context context, AttributeSet attrs, int defStyle) {
+    public SimpleRichText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -76,7 +76,7 @@ public class SimpleRichTextView extends AppCompatEditText implements RichTextVie
         prePos = curPos;
     }
 
-    public void setStyle(@Style.StyleVal int style) {
+    public void setStyle(@Style.StyleDef int style) {
         int star = getSelectionStart();
         int end = getSelectionEnd();
         if (star < 0 || end > length())
@@ -105,11 +105,11 @@ public class SimpleRichTextView extends AppCompatEditText implements RichTextVie
         }
     }
 
-    public boolean hasStyle(@Style.StyleVal int style) {
+    public boolean hasStyle(@Style.StyleDef int style) {
         return Style.hasStyle(this, style);
     }
 
-    public boolean hasStyle(int star, int end, @Style.StyleVal int style) {
+    public boolean hasStyle(int star, int end, @Style.StyleDef int style) {
         return Style.hasStyle(getText(), star, end, style);
     }
 
@@ -152,7 +152,7 @@ public class SimpleRichTextView extends AppCompatEditText implements RichTextVie
     }
 
 
-    private void setStyle(int star, int end, @Style.StyleVal int style) {
+    private void setStyle(int star, int end, @Style.StyleDef int style) {
         setSpan(star, end, Style.getSpan(style));
     }
 

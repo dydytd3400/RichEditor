@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.echoleaf.richeditor.R;
 import com.echoleaf.richeditor.Style;
-import com.echoleaf.richeditor.richview.RichTextView;
+import com.echoleaf.richeditor.richview.RichText;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
@@ -48,7 +48,7 @@ public class SimpleSelectionActionMenu extends ActionMode.Callback2 {
         int end = mEditText.getSelectionEnd();
         if (start == 0 && mEditText.length() == end)
             menu.removeItem(R.id.all);
-        menu.setGroupVisible(R.id.style_group, mEditText instanceof RichTextView);
+        menu.setGroupVisible(R.id.style_group, mEditText instanceof RichText);
         this.mMenu = menu;
         return true;
     }
@@ -81,11 +81,11 @@ public class SimpleSelectionActionMenu extends ActionMode.Callback2 {
     }
 
     private void styleActionItem(int itemId) {
-        if (!(mEditText instanceof RichTextView)) {
+        if (!(mEditText instanceof RichText)) {
             this.mMenu.close();
             return;
         }
-        RichTextView richEditText = (RichTextView) mEditText;
+        RichText richEditText = (RichText) mEditText;
         int style = 0;
         if (itemId == R.id.bold) {
             style = Style.BOLD;

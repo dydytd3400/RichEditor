@@ -8,11 +8,11 @@ import com.echoleaf.richeditor.listener.OnSelectionChangeListener;
  *
  * @author echoleaf
  */
-public interface RichTextView extends RichView {
+public interface RichText extends RichView {
 
-    void setStyle(@Style.StyleVal int style);
+    void setStyle(@Style.StyleDef int style);
 
-    boolean hasStyle(@Style.StyleVal int style);
+    boolean hasStyle(@Style.StyleDef int style);
 
     void setTextSize(float textSize);
 
@@ -31,5 +31,9 @@ public interface RichTextView extends RichView {
     int getSelectionStart();
 
     int getSelectionEnd();
+
+    CharSequence getText();
+
+    void setText(CharSequence text);
 
 }

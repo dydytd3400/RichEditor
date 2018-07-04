@@ -24,11 +24,14 @@ public class Style {
 
     @IntDef({NORMAL, BOLD, ITALIC, BOLD_ITALIC, UNDERLINE, STRIKE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface StyleVal {
+    public @interface StyleDef {
     }
 
 
-    public static List<Object> findStyle(Spanned spanned, int star, int end, @StyleVal int style) {
+    public static List<Object> findStyle(CharSequence charSequence, int star, int end, @StyleDef int style) {
+        if (charSequence == null || !(charSequence instanceof Spanned))
+            return null;
+        Spanned spanned = (Spanned) charSequence;
         if (star < 0 || end > spanned.length())
             return null;
         Class<?> spanType = null;
@@ -64,33 +67,30 @@ public class Style {
     }
 
 
-    public static boolean hasStyle(TextView textView, @StyleVal int style) {
+    public static boolean hasStyle(TextView textView, @StyleDef int style) {
         int star = textView.getSelectionStart();
         int end = textView.getSelectionEnd();
         if (star < 0 || end > textView.length())
             return false;
         CharSequence text = textView.getText();
-        if (text != null && text instanceof Spanned) {
-            Spanned spanned = (Spanned) text;
-            if (star == end) {
-                if (star > 0) {
-                    if (hasStyle(spanned, star - 1, end, style))
-                        return true;
-                } else if (end < textView.length()) {
-                    if (hasStyle(spanned, star, end + 1, style))
-                        return true;
-                }
-            } else return hasStyle(spanned, star, end, style);
-        }
+        if (star == end) {
+            if (star > 0) {
+                if (hasStyle(text, star - 1, end, style))
+                    return true;
+            } else if (end < textView.length()) {
+                if (hasStyle(text, star, end + 1, style))
+                    return true;
+            }
+        } else return hasStyle(text, star, end, style);
         return false;
     }
 
-    public static boolean hasStyle(Spanned spanned, int star, int end, @StyleVal int style) {
-        List spans = findStyle(spanned, star, end, style);
+    public static boolean hasStyle(CharSequence charSequence, int star, int end, @StyleDef int style) {
+        List spans = findStyle(charSequence, star, end, style);
         return spans != null && spans.size() > 0;
     }
 
-    public static Object getSpan(@StyleVal int style) {
+    public static Object getSpan(@StyleDef int style) {
         Object span = null;
         switch (style) {
             case Style.BOLD:
@@ -109,11 +109,11 @@ public class Style {
         return span;
     }
 
-    public static void setStyle(CharSequence charSequence, @Style.StyleVal int style) {
+    public static void setStyle(CharSequence charSequence, @StyleDef int style) {
         setSpan(charSequence, getSpan(style));
     }
 
-    public static void setStyle(CharSequence charSequence, int star, int end, @Style.StyleVal int style) {
+    public static void setStyle(CharSequence charSequence, int star, int end, @StyleDef int style) {
         setSpan(charSequence, star, end, getSpan(style));
     }
 

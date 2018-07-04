@@ -22,9 +22,9 @@ import com.echoleaf.richeditor.listener.OnSelectionChangeListener;
 import com.echoleaf.richeditor.menu.SelectionActionMenuCreator;
 import com.echoleaf.richeditor.piece.RichPiece;
 import com.echoleaf.richeditor.piece.RichPieceAdapter;
-import com.echoleaf.richeditor.richview.RichTextView;
+import com.echoleaf.richeditor.richview.RichText;
 import com.echoleaf.richeditor.richview.RichView;
-import com.echoleaf.richeditor.richview.SimpleRichTextView;
+import com.echoleaf.richeditor.richview.SimpleRichText;
 
 
 /**
@@ -193,8 +193,8 @@ public class RichEditor extends NestedScrollView implements RichView {
         }
         if (view instanceof RichView) {
             ((RichView) view).setOnContentChangeListener(onContentChangeListener);
-            if (view instanceof RichTextView)
-                ((RichTextView) view).setOnSelectionChangeListener(new OnSelectionChangeListener() {
+            if (view instanceof RichText)
+                ((RichText) view).setOnSelectionChangeListener(new OnSelectionChangeListener() {
                     @Override
                     public void onSelectionChange(View v, int prePos, int curPos) {
                         if (onFocusChangeListener != null)
@@ -333,46 +333,46 @@ public class RichEditor extends NestedScrollView implements RichView {
     }
 
     public void bold() {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            ((RichTextView) lastFocusEdit).setStyle(Style.BOLD);
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            ((RichText) lastFocusEdit).setStyle(Style.BOLD);
     }
 
     public void italic() {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            ((RichTextView) lastFocusEdit).setStyle(Style.ITALIC);
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            ((RichText) lastFocusEdit).setStyle(Style.ITALIC);
     }
 
     public void underline() {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            ((RichTextView) lastFocusEdit).setStyle(Style.UNDERLINE);
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            ((RichText) lastFocusEdit).setStyle(Style.UNDERLINE);
     }
 
     public void strike() {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            ((RichTextView) lastFocusEdit).setStyle(Style.STRIKE);
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            ((RichText) lastFocusEdit).setStyle(Style.STRIKE);
     }
 
     public boolean isBold() {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            return ((RichTextView) lastFocusEdit).hasStyle(Style.BOLD);
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            return ((RichText) lastFocusEdit).hasStyle(Style.BOLD);
         return false;
     }
 
     public boolean isItalic() {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            return ((RichTextView) lastFocusEdit).hasStyle(Style.ITALIC);
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            return ((RichText) lastFocusEdit).hasStyle(Style.ITALIC);
         return false;
     }
 
     public boolean isUnderline() {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            return ((RichTextView) lastFocusEdit).hasStyle(Style.UNDERLINE);
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            return ((RichText) lastFocusEdit).hasStyle(Style.UNDERLINE);
         return false;
     }
 
     public boolean isStrike() {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            return ((RichTextView) lastFocusEdit).hasStyle(Style.STRIKE);
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            return ((RichText) lastFocusEdit).hasStyle(Style.STRIKE);
         return false;
     }
 
@@ -452,13 +452,13 @@ public class RichEditor extends NestedScrollView implements RichView {
     }
 
     public void setTextSize(float size) {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            ((RichTextView) lastFocusEdit).setTextSize(size, lastFocusEdit.getSelectionStart(), lastFocusEdit.getSelectionEnd());
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            ((RichText) lastFocusEdit).setTextSize(size, lastFocusEdit.getSelectionStart(), lastFocusEdit.getSelectionEnd());
     }
 
     public void setTextColor(int color) {
-        if (lastFocusEdit != null && lastFocusEdit instanceof RichTextView)
-            ((RichTextView) lastFocusEdit).setTextColor(color, lastFocusEdit.getSelectionStart(), lastFocusEdit.getSelectionEnd());
+        if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
+            ((RichText) lastFocusEdit).setTextColor(color, lastFocusEdit.getSelectionStart(), lastFocusEdit.getSelectionEnd());
     }
 
     public void setBaseEditTextCreator(BaseEditTextCreator baseEditTextCreator) {
@@ -556,7 +556,7 @@ public class RichEditor extends NestedScrollView implements RichView {
                 baseEditTextCreator = new BaseEditTextCreator() {
                     @Override
                     public EditText create(Context context) {
-                        EditText editText = new SimpleRichTextView(context);
+                        EditText editText = new SimpleRichText(context);
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
                         editText.setLayoutParams(params);
                         editText.setPadding(lr, tb, lr, tb);
