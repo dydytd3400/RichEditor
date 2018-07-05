@@ -77,7 +77,7 @@ mEditor.isBold();//返回光标所选区域是否为粗体样式
 mEditor.isStrike();//返回光标所选区域是否有删除线
 }
 ```
-### 高级应用
+### 灵活应用
 插入一段文本
 ```
 mEditor.insert("RichEditor Simple Example");
@@ -110,3 +110,6 @@ image.setImageResource(R.mipmap.simple_image);
 mEditor.insert(image);
 ```
 可以通过上述系列方法添加任意View，如果View实现了RichView或者RichTextView接口，那么RichEditor则会将该View转换为特定Html或普通text文本，否则仅做内容展示。
+
+
+以上为RichEditor的几个简单应用示例，功能相对简单基础，但人就保留了高自定义的特征。今后仍会对该项目进行升级更新拓展，增加水平布局混排等（现阶段版本其实已经预留有该接口）。
