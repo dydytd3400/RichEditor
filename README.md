@@ -80,11 +80,25 @@ mEditor.isStrike();//返回光标所选区域是否有删除线
 插入一段文本
 ```
 mEditor.insert("RichEditor Simple Example");
-//或者
+```
+或者
+```
 SimpleRichText richText = new SimpleRichText(this);
 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 richText.setLayoutParams(layoutParams);
 mEditor.insert(richText);
+```
+其中SimpleRichText是RichEditor默认使用的EditText实例，RichEditor内部自动创建的EditText实例均为该对象。
+可以通过以下方式进行更改
+```
+mEditor.config().baseEditCreator(new RichEditor.BaseEditTextCreator() {
+        @Override
+        public EditText create(Context context) {
+            return new EditText(context);
+        }
+    })
+    ...
+    .build();;
 ```
 插入一个图片View
 ```
@@ -94,4 +108,4 @@ image.setLayoutParams(layoutParams);
 image.setImageResource(R.mipmap.simple_image);
 mEditor.insert(image);
 ```
-可以通过上述系列方法添加任意View，如果View实现了RichView或者RichTextView接口，那么RichEditor则会将该View转换为特定Html或普通text文本，否则进做内容展示。
+可以通过上述系列方法添加任意View，如果View实现了RichView或者RichTextView接口，那么RichEditor则会将该View转换为特定Html或普通text文本，否则仅做内容展示。
