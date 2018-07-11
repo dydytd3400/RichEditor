@@ -72,7 +72,8 @@ public class RichEditor extends NestedScrollView implements RichView {
                         int curIndex = indexOfPiece(editTxt);
                         if (editTxt.length() == 0)
                             remove((RichPiece) editTxt.getTag());
-                        remove(curIndex - 1);
+                        else
+                            remove(curIndex - 1);
                     }
                 }
                 return false;
