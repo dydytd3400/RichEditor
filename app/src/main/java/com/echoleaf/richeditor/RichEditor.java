@@ -41,6 +41,7 @@ public class RichEditor extends NestedScrollView implements RichView {
     private OnContentChangeListener onContentChangeListener;
     private OnPieceChangeListener onPieceChangeListener;
     private SelectionActionMenuCreator selectionActionMenuCreator;
+    private OnScrollListener onScrollListener;
 
     private BaseEditTextCreator baseEditTextCreator;
     private float defaultSize = 12;
@@ -451,6 +452,11 @@ public class RichEditor extends NestedScrollView implements RichView {
         this.onContentChangeListener = onContentChangeListener;
     }
 
+    public void setOnScrollListener(OnScrollListener onScrollListener) {
+        this.onScrollListener = onScrollListener;
+    }
+
+
     public void setTextSize(float size) {
         if (lastFocusEdit != null && lastFocusEdit instanceof RichText)
             ((RichText) lastFocusEdit).setTextSize(size, lastFocusEdit.getSelectionStart(), lastFocusEdit.getSelectionEnd());
@@ -465,6 +471,14 @@ public class RichEditor extends NestedScrollView implements RichView {
         this.baseEditTextCreator = baseEditTextCreator;
     }
 
+    @Override
+    protected void onScrollChanged(int x, int y, int oldx, int oldy) {
+        super.onScrollChanged(x, y, oldx, oldy);
+        if (onScrollListener != null) {
+            onScrollListener.onScroll(this, x, y, oldx, oldy);
+        }
+    }
+
     private Config config;
 
     public static class Config {
@@ -477,6 +491,7 @@ public class RichEditor extends NestedScrollView implements RichView {
         private BaseEditTextCreator baseEditTextCreator;
         private OnPieceChangeListener pieceChangeListener;
         private SelectionActionMenuCreator selectionActionMenuCreator;
+        private OnScrollListener scrollListener;
 
         private Config(RichEditor richEditor) {
             this.mRichEditor = richEditor;
@@ -509,6 +524,11 @@ public class RichEditor extends NestedScrollView implements RichView {
             return this;
         }
 
+
+        public Config scrollListener(OnScrollListener scrollListener) {
+            this.scrollListener = scrollListener;
+            return this;
+        }
 
         public Config transition(LayoutTransition transition) {
             this.transition = transition;
@@ -578,6 +598,7 @@ public class RichEditor extends NestedScrollView implements RichView {
             mRichEditor.setOnContentChangeListener(onContentChangeListener);
             mRichEditor.onPieceChangeListener = pieceChangeListener;
             mRichEditor.selectionActionMenuCreator = selectionActionMenuCreator;
+            mRichEditor.setOnScrollListener(scrollListener);
             mRichEditor.init();
         }
 
@@ -634,5 +655,18 @@ public class RichEditor extends NestedScrollView implements RichView {
          */
         public void someStyle(EditText editText) {
         }
+    }
+
+    public interface OnScrollListener {
+        /**
+         * Called when the scroll position of a view changes.
+         *
+         * @param v          The view whose scroll position has changed.
+         * @param scrollX    Current horizontal scroll origin.
+         * @param scrollY    Current vertical scroll origin.
+         * @param oldScrollX Previous horizontal scroll origin.
+         * @param oldScrollY Previous vertical scroll origin.
+         */
+        void onScroll(RichEditor v, int scrollX, int scrollY, int oldScrollX, int oldScrollY);
     }
 }
