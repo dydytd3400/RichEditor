@@ -191,7 +191,7 @@ public class SimpleRichText extends AppCompatEditText implements RichText {
     @Override
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
-        setEnabled(!readOnly);
+        setFocusableInTouchMode(!readOnly);
         setFocusable(!readOnly);
         setClickable(!readOnly);
     }

@@ -4,10 +4,14 @@ import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -16,6 +20,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.echoleaf.richeditor.htmltext.inner.Html;
+import com.echoleaf.richeditor.htmltext.render.AreImageGetter;
+import com.echoleaf.richeditor.htmltext.render.AreTagHandler;
+import com.echoleaf.richeditor.htmltext.spans.AreVideoSpan;
 import com.echoleaf.richeditor.listener.OnContentChangeListener;
 import com.echoleaf.richeditor.listener.OnPieceChangeListener;
 import com.echoleaf.richeditor.listener.OnSelectionChangeListener;
@@ -25,6 +33,10 @@ import com.echoleaf.richeditor.piece.RichPieceAdapter;
 import com.echoleaf.richeditor.richview.RichText;
 import com.echoleaf.richeditor.richview.RichView;
 import com.echoleaf.richeditor.richview.SimpleRichText;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 
 /**
@@ -44,8 +56,10 @@ public class RichEditor extends NestedScrollView implements RichView {
     private OnScrollListener onScrollListener;
 
     private BaseEditTextCreator baseEditTextCreator;
+    private MediaFormHtmlCreator mediaFormHtmlCreator;
     private float defaultSize = 12;
     private int defaultColor = Color.BLACK;
+    private boolean readOnly;
 
     public RichEditor(@NonNull Context context) {
         this(context, null);
@@ -140,6 +154,7 @@ public class RichEditor extends NestedScrollView implements RichView {
     }
 
     public void insert(@NonNull RichPiece richPiece) {
+        richPiece.setReadOnly(readOnly);
         View view = richPiece.getView();
         if (view instanceof EditText) {
             if (getPieceCount() > 0 && getPieceAt(getPieceCount() - 1) instanceof EditText)
@@ -409,19 +424,50 @@ public class RichEditor extends NestedScrollView implements RichView {
         insert(text);
     }
 
-    //TODO
     @Override
     public void fromHtml(String html) {
-        for (int i = 0; i < getPieceCount(); i++) {
-            View piece = getPieceAt(i);
-            if (piece != null && piece instanceof RichView) {
-                ((RichView) piece).fromHtml(html);
+        Html.sContext = getContext();
+        AreImageGetter imageGetter = new AreImageGetter(getContext());
+        AreTagHandler tagHandler = new AreTagHandler();
+        final SpannableStringBuilder spanned = (SpannableStringBuilder) Html.fromHtml(html, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH, imageGetter, tagHandler);
+        ImageSpan[] spans = spanned.getSpans(0, spanned.length(), ImageSpan.class);
+//        ArrayList<ImageSpan> imageSpans = new ArrayList(Arrays.asList(spans));
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            imageSpans.sort(); {
+//                spanned.getSpanStart(it)
+//            }
+//        }
+        int start = 0;
+        for (ImageSpan span : spans) {
+            int spanStart = spanned.getSpanStart(span);
+            if (start != spanStart) {
+                insert(spanned.subSequence(start, spanStart));
+            }
+            RichPieceAdapter<View> media = createMedia(span);
+            if (media != null)
+                insert(media);
+            start = spanned.getSpanEnd(span);
+        }
+        if (start < spanned.length())
+            insert(spanned.subSequence(start, spanned.length()));
+    }
+
+    private RichPieceAdapter<View> createMedia(ImageSpan span) {
+        RichPieceAdapter<View> adapter = null;
+        if (mediaFormHtmlCreator != null) {
+            if (span instanceof AreVideoSpan) {
+                adapter = new RichPieceAdapter<>(mediaFormHtmlCreator.video(getContext(), (AreVideoSpan) span));
+            } else {
+                adapter = new RichPieceAdapter<>(mediaFormHtmlCreator.image(getContext(), span));
             }
         }
+        return adapter;
     }
+
 
     @Override
     public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
         for (int i = 0; i < getPieceCount(); i++) {
             View piece = getPieceAt(i);
             if (piece != null && piece instanceof RichView) {
@@ -432,14 +478,7 @@ public class RichEditor extends NestedScrollView implements RichView {
 
     @Override
     public boolean isReadOnly() {
-        for (int i = 0; i < getPieceCount(); i++) {
-            View piece = getPieceAt(i);
-            if (piece != null && piece instanceof RichView) {
-                if (((RichView) piece).isReadOnly())
-                    return true;
-            }
-        }
-        return false;
+        return readOnly;
     }
 
     @Override
@@ -472,6 +511,10 @@ public class RichEditor extends NestedScrollView implements RichView {
         this.baseEditTextCreator = baseEditTextCreator;
     }
 
+    public void setMediaFormHtmlCreator(MediaFormHtmlCreator mediaFormHtmlCreator) {
+        this.mediaFormHtmlCreator = mediaFormHtmlCreator;
+    }
+
     @Override
     protected void onScrollChanged(int x, int y, int oldx, int oldy) {
         super.onScrollChanged(x, y, oldx, oldy);
@@ -490,9 +533,11 @@ public class RichEditor extends NestedScrollView implements RichView {
         private View.OnFocusChangeListener onFocusChangeListener;
         private OnContentChangeListener onContentChangeListener;
         private BaseEditTextCreator baseEditTextCreator;
+        private MediaFormHtmlCreator mediaFormHtmlCreator;
         private OnPieceChangeListener pieceChangeListener;
         private SelectionActionMenuCreator selectionActionMenuCreator;
         private OnScrollListener scrollListener;
+        private boolean readOnly;
 
         private Config(RichEditor richEditor) {
             this.mRichEditor = richEditor;
@@ -500,8 +545,18 @@ public class RichEditor extends NestedScrollView implements RichView {
             this.transition.setDuration(300);
         }
 
+        public Config readOnly(boolean readOnly) {
+            this.readOnly = readOnly;
+            return this;
+        }
+
         public Config baseEditCreator(BaseEditTextCreator baseEditTextCreator) {
             this.baseEditTextCreator = baseEditTextCreator;
+            return this;
+        }
+
+        public Config mediaFormHtmlCreator(MediaFormHtmlCreator mediaFormHtmlCreator) {
+            this.mediaFormHtmlCreator = mediaFormHtmlCreator;
             return this;
         }
 
@@ -586,20 +641,22 @@ public class RichEditor extends NestedScrollView implements RichView {
                     }
                 };
             }
+            mRichEditor.transition = transition;
+            mRichEditor.container.setLayoutTransition(transition);
+            mRichEditor.setBaseEditTextCreator(baseEditTextCreator);
+            mRichEditor.setMediaFormHtmlCreator(mediaFormHtmlCreator);
+            mRichEditor.setOnFocusChangeListener(onFocusChangeListener);
+            mRichEditor.setOnContentChangeListener(onContentChangeListener);
+            mRichEditor.onPieceChangeListener = pieceChangeListener;
+            mRichEditor.selectionActionMenuCreator = selectionActionMenuCreator;
+            mRichEditor.setOnScrollListener(scrollListener);
+            mRichEditor.setReadOnly(readOnly);
             if (!TextUtils.isEmpty(text)) {
                 mRichEditor.fromText(text);
             }
             if (!TextUtils.isEmpty(html)) {
                 mRichEditor.fromHtml(html);
             }
-            mRichEditor.transition = transition;
-            mRichEditor.container.setLayoutTransition(transition);
-            mRichEditor.setBaseEditTextCreator(baseEditTextCreator);
-            mRichEditor.setOnFocusChangeListener(onFocusChangeListener);
-            mRichEditor.setOnContentChangeListener(onContentChangeListener);
-            mRichEditor.onPieceChangeListener = pieceChangeListener;
-            mRichEditor.selectionActionMenuCreator = selectionActionMenuCreator;
-            mRichEditor.setOnScrollListener(scrollListener);
             mRichEditor.init();
         }
 
@@ -656,6 +713,20 @@ public class RichEditor extends NestedScrollView implements RichView {
          */
         public void someStyle(EditText editText) {
         }
+    }
+
+    public interface MediaFormHtmlCreator {
+        /**
+         * 必须实现的抽象方法
+         * 用于创建默认的EditTextView
+         * 该抽象方法下所设置的EditText部分样式值可能会被覆盖，如果不想被覆盖，请重载下方 someStyle 方法来设置
+         *
+         * @param context
+         * @return
+         */
+        View video(Context context, AreVideoSpan span);
+
+        View image(Context context, ImageSpan span);
     }
 
     public interface OnScrollListener {
