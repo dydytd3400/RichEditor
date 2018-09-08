@@ -6,7 +6,7 @@ RichEditor是Android平台下基于Span和NestedScrollView实现的Html富文本
 在gradle中增加如下配置
 ```
 dependencies {
- implementation'com.github.dydytd3400:RichEditor:1.0.1'
+ implementation'com.github.dydytd3400:RichEditor:1.0.5'
 }
 ```
 
